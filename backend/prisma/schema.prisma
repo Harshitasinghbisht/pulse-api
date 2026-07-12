@@ -9,7 +9,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("NEON_URL")
 }
 
 model User {
@@ -24,7 +23,7 @@ model User {
 
   verificationToken   String?
   passwordResetToken  String?
-  passwordResetExpiry String?
+  passwordResetExpiry DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
