@@ -13,7 +13,7 @@ export const sendVerificationEmail = async (
                          <h2>Verify your email</h2>
                          <p>Click the button below to verify your account:</p>
                    
-                         <a href="http://localhost:5173/verify/${token}" 
+                         <a href="http://localhost:${process.env.PORT}/api/v1/auth/verify-email/${token}" 
                             style="display:inline-block; padding:10px 20px; background:#3b82f6; color:white; text-decoration:none; border-radius:6px;">
                             Verify Email
                          </a>
@@ -36,10 +36,11 @@ export const sendResetPasswordEmail = async (
         subject: "reset password Email",
         html: `<div style="font-family: Arial, sans-serif; padding: 20px;">
              
-                         <h2> ${name}Reset your password</h2>
+                         <h2>Hello ${name},</h2>
+                         <h3>Reset your password</h3>
                          <p>Click the button below to reset your password:</p>
                    
-                         <a href="http://localhost:5173/reset/${token}" 
+                         <a href="http://localhost:${process.env.PORT}/api/v1/auth/reset-password/${token}" 
                             style="display:inline-block; padding:10px 20px; background:#3b82f6; color:white; text-decoration:none; border-radius:6px;">
                             Reset password
                          </a>
