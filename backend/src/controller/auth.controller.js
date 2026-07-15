@@ -87,8 +87,8 @@ export const userVerify=async(req,res)=>{
      })
    }
  
-   const user= await prisma.user.findUnique({
-     where:{token}
+   const user= await prisma.user.findFirst({
+     where:{verificationToken:token}
    })
  
    if(!user){
@@ -323,7 +323,7 @@ export const resetPassword=async(req,res)=>{
       message:"User not found"
     })
     }
-
+  
     if(user.passwordResetExpiry<new Date()){
        return res.status(400).json({
       success:false,

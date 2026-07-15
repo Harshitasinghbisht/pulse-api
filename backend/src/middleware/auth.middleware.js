@@ -1,11 +1,12 @@
 import jwt from "jsonwebtoken";
-import {prisma}  from "../config/prisma.js"
+import {prisma} from "../config/prisma.js"
 
 export const authenticate=async(req,res,next)=>{
   try {
       const token=req.cookies.token;
   
       if(!token){
+        console.error("middleware",error)
           return res.status(401).json({
               success:false,
               message:"authentication failed"

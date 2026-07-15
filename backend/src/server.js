@@ -2,8 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import {prisma} from "./config/prisma.js"
-
+import { prisma } from "../src/config/prisma.js";
 
 //importhing the routes
 import userRouter from "./routes/auth.route.js";
