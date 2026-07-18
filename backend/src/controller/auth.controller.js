@@ -1,9 +1,7 @@
-import {PrismaClient} from "@prisma/client";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import {sendVerificationEmail,sendResetPasswordEmail}  from '../services/emailService.js';
 import {prisma} from "../config/prisma.js"
-import { json } from "stream/consumers";
 import jwt from "jsonwebtoken"
 
 

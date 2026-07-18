@@ -19,4 +19,38 @@ model User {
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
   passwordResetExpiry DateTime?
+  workspaceMembers WorkspaceMember[]
+}
+
+model Workspace{
+id String @id @default(cuid())
+name String
+description  String?
+workspaceMembers WorkspaceMember[]
+
+ createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WorkspaceMember {
+   id String @id @default(cuid())
+
+  userId String
+  workspaceId String
+
+  role WorkspaceRole @default(VIEWER)
+
+  joinedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId])
+}
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  EDITOR
+  VIEWER
 }
