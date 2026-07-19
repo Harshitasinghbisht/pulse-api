@@ -3,19 +3,19 @@ export const getWorkspaceRole=(workspace,userId)=>{
     return member?.role || null;
 }
 
-export const boardPermission={
-  viewWorkspace: ["owner", "member","viewer","admin"],
-  updateWorkspace: ["owner"],
-  deleteWorkspace: ["owner"],
-  inviteMember: ["owner"],
-  removeMember: ["owner"],
+export const workspacePermission={
+  viewWorkspace:   ["OWNER", "MEMBER","VIEWER","ADMIN"],
+  updateWorkspace: ["OWNER"],
+  deleteWorkspace: ["OWNER"],
+  inviteMember:    ["OWNER"],
+  removeMember:    ["OWNER"],
 };
 
-export const getWorkspaceRole=(workspace,userId,action)=>{
-    const role=getBoardRole(workspace,userId)
+export const hasPermission=(workspace,userId,action)=>{
+    const role=getWorkspaceRole(workspace,userId)
     if(!role){
         return false
     }
 
-    return boardPermission[action].includes(role);
+    return workspacePermission[action].includes(role);
 }

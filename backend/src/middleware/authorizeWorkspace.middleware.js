@@ -1,11 +1,14 @@
 import {prisma} from "../config/prisma.js"
 import {hasPermission} from "../services/hasPermission.js"
+import { getWorkspaceRole } from "../services/hasPermission.js"
 
 export const authorizeWorkspace=(action)=>{
     return async(req,res,next)=>{
         try {
             const {workspaceId}=req.params;
             const userId=req.user.id;
+            console.log(userId)
+            console.log(workspaceId)
 
             if(!workspaceId){
                 return res.status(404).json({
@@ -16,7 +19,7 @@ export const authorizeWorkspace=(action)=>{
      const workspace = await prisma.workspace.findUnique({
     where: { id: workspaceId },
     include: {
-        members: {
+        workspaceMembers: {
             where: {
                 userId,
             },
@@ -45,6 +48,8 @@ export const authorizeWorkspace=(action)=>{
            
            req.workspace = workspace;
            req.workspaceRole = role;
+
+           next();
 
         } catch (error) {
             console.error("middleware workspace",error)

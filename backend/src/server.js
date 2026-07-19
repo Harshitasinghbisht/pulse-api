@@ -6,6 +6,7 @@ import { prisma } from "../src/config/prisma.js";
 
 //importhing the routes
 import userRouter from "./routes/auth.route.js";
+import workspaceRouter from "./routes/workspace.route.js"
 
 dotenv.config();
 const app=express();
@@ -24,6 +25,7 @@ app.use(cookieParser());
 
 
 app.use("/api/v1/auth",userRouter);
+app.use("/api/v1/workspace",workspaceRouter);
 
 // 404 Route Handler
 app.use((req, res) => {

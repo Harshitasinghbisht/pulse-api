@@ -1,4 +1,4 @@
-import { prisma } from "../config/prisma";
+import { prisma } from "../config/prisma.js";
 
 export const createWorkspace=async(req,res)=>{
     const name=req.body.name?.trim();
@@ -12,6 +12,24 @@ export const createWorkspace=async(req,res)=>{
 
     const userId = req.user.id;
     try {
+       const existingNameConflict = await prisma.workspace.findFirst({
+            where: {
+                name: name,
+                workspaceMembers: {
+                    some: {
+                        userId: userId,
+                        role: "OWNER"
+                    }
+                }
+            }
+        });
+          
+        if (existingNameConflict) {
+            return res.status(400).json({
+                success: false,
+                message: "You already have a workspace with this name."
+            });
+        }
         const workspace=await prisma.workspace.create({
             data:{
                 name,
@@ -21,11 +39,11 @@ export const createWorkspace=async(req,res)=>{
                         userId:userId,
                         role:"OWNER"
                     }
-                },
-                 include: {
+                }
+            },
+                include: {
                          workspaceMembers: true
-                       }
-            }
+                       } 
         });
          return res.status(201).json({
                      success:true,
@@ -117,6 +135,7 @@ export const updateWorkspace=async(req,res)=>{
     const userId=req.user.id;
     const {workspaceId}=req.params;
     const workspace=req.workspace;
+    console.log(workspace)
    if (
     workspace.name === name &&
     workspace.description === description
