@@ -83,33 +83,11 @@ try {
 }
 
 export const getWorkspaceById = async (req, res) => {
-    const { workspaceId } = req.params;
+    
     const userId = req.user.id;
+    const workspace=req.workspace;
 
     try {
-        const workspace = await prisma.workspace.findFirst({
-            where: {
-                id: workspaceId,
-                workspaceMembers: {
-                    some: {
-                        userId,
-                    },
-                },
-            },
-            include: {
-                workspaceMembers: {
-                    include: {
-                        user: {
-                            select: {
-                                id: true,
-                                name: true,
-                                email: true,
-                            },
-                        },
-                    },
-                },
-            },
-        });
 
         if (!workspace) {
             return res.status(404).json({
@@ -138,6 +116,7 @@ export const updateWorkspace=async(req,res)=>{
     const description=req.body.description?.trim();
     const userId=req.user.id;
     const {workspaceId}=req.params;
+    const workspace=req.workspace;
    if (
     workspace.name === name &&
     workspace.description === description
@@ -148,24 +127,7 @@ export const updateWorkspace=async(req,res)=>{
     });
 }
   try {
-    const workspace=await prisma.workspace.findFirst({
-        where:{
-            id:workspaceId,
-         workspaceMembers: {
-                    some: {
-                        userId,
-                         role: {
-                            in: ["OWNER", "ADMIN"],
-                        }
-                    }
-                }
-        },
-         select: {
-        id: true,
-        name: true,
-        description: true,
-    },
-    })
+    
     if (!workspace) {
     return res.status(404).json({
         success: false,
@@ -200,4 +162,34 @@ export const updateWorkspace=async(req,res)=>{
         message: "Internal server error"
     });
   }
+}
+
+export const deleteWorkspace=async(req,res)=>{
+    const {workspaceId}=req.params;
+     const userId=req.user.id;
+     const workspace=req.workspace;
+    try {
+    if(!workspace){
+        return res.status(404).json({
+            success:false,
+            message:"workspace not found"
+        })
+    }
+
+    await prisma.workspace.delete({
+        where:{
+            id:workspaceId
+        }
+    })
+     return res.status(200).json({
+            success:true,
+            message:"workspace deleted successfully"
+        })
+    } catch (error) {
+        console.error("deleteWorkspace error",error)
+         return res.status(500).json({
+            success:false,
+            message:"Internal server error"
+        })
+    }
 }
