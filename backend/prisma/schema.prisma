@@ -8,34 +8,36 @@ datasource db {
 }
 
 model User {
-  id                  String    @id @default(cuid())
+  id                  String            @id @default(cuid())
   name                String
-  email               String    @unique
+  email               String            @unique
   password            String
-  role                String    @default("user")
-  isVerified          Boolean   @default(false)
+  role                String            @default("user")
+  isVerified          Boolean           @default(false)
   verificationToken   String?
   passwordResetToken  String?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
   passwordResetExpiry DateTime?
-  workspaceMembers WorkspaceMember[]
+  workspaceMembers    WorkspaceMember[]
+  invitations         Invitation[]
 }
 
-model Workspace{
-id String @id @default(cuid())
-name String
-description  String?
-workspaceMembers WorkspaceMember[]
+model Workspace {
+  id               String            @id @default(cuid())
+  name             String
+  description      String?
+  workspaceMembers WorkspaceMember[]
 
- createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  invitations Invitation[]
 }
 
 model WorkspaceMember {
-   id String @id @default(cuid())
+  id String @id @default(cuid())
 
-  userId String
+  userId      String
   workspaceId String
 
   role WorkspaceRole @default(VIEWER)
@@ -48,9 +50,38 @@ model WorkspaceMember {
 
   @@unique([userId, workspaceId])
 }
+
 enum WorkspaceRole {
   OWNER
   ADMIN
   EDITOR
   VIEWER
+}
+
+model Invitation {
+  id          String           @id @default(cuid())
+
+  email       String
+  token       String           @unique
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  role        WorkspaceRole    @default(VIEWER)
+
+  status      InvitationStatus @default(PENDING)
+
+  expiresAt   DateTime
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([workspaceId, email])
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
 }

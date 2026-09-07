@@ -53,3 +53,37 @@ export const sendResetPasswordEmail = async (
                        </div>`
     });
 };
+
+export const sendInvitationEmail = async (
+    email,
+    token,
+    role,
+    invitedBy,
+    workspace,
+    name
+) => {
+    await resend.emails.send({
+        from: "Acme <onboarding@resend.dev>",
+        to: email,
+        subject: "Invitation",
+        html: `<div style="font-family: Arial, sans-serif; padding: 20px;">
+             
+                         <h2>Hello ${name},</h2>
+                         <h3>You have been invited to join:</h3>
+                         <p>Workspace: ${workspace.name} </br>
+                         Role: ${role}
+                         </br>
+                         Invited by: ${invitedBy}
+                         <p>Click the button to accept the invition</p>
+                   
+                         <a href="http://localhost:${process.env.PORT}/api/v1/invitation/${token}" 
+                            style="display:inline-block; padding:10px 20px; background:#3b82f6; color:white; text-decoration:none; border-radius:6px;">
+                            Invitatain
+                         </a>
+                   
+                         <p style="margin-top:20px; font-size:12px; color:gray;">
+                           If you didn’t request this, you can ignore this email.
+                         </p>
+                       </div>`
+    });
+};
