@@ -59,22 +59,22 @@ enum WorkspaceRole {
 }
 
 model Invitation {
-  id          String           @id @default(cuid())
-
-  email       String
-  token       String           @unique
+  id    String @id @default(cuid())
+  email String
+  token String @unique
 
   workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-  role        WorkspaceRole    @default(VIEWER)
+  invitedById String
+  invitedBy   User   @relation(fields: [invitedById], references: [id])
 
-  status      InvitationStatus @default(PENDING)
+  role      WorkspaceRole    @default(VIEWER)
+  status    InvitationStatus @default(PENDING)
+  expiresAt DateTime
 
-  expiresAt   DateTime
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([workspaceId, email])
 }
