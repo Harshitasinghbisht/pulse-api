@@ -90,4 +90,4 @@ export const sendInvitationEmail = async (
     } catch (err) {
         console.error("Failed to send email via Resend:", err);
     }
-};
+}; 

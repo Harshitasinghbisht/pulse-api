@@ -5,7 +5,7 @@ import { sendInvitation ,getInvitationByToken,acceptInvitation,cancelInvitation 
 
 const invitationRouter=express.Router();
 
-invitationRouter.post("/",authenticate,authorizeWorkspace,sendInvitation);
+invitationRouter.post("/:workspaceId",authenticate,authorizeWorkspace("inviteMember"),sendInvitation);
 invitationRouter.get("/:token",getInvitationByToken);
 invitationRouter.post("/:token/accept",authenticate,acceptInvitation);
 invitationRouter.delete("/:id",authenticate,cancelInvitation);

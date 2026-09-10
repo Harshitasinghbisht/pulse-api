@@ -4,12 +4,11 @@ import { sendInvitationEmail } from "../services/emailService.js";
 
 
 export const sendInvitation = async (req, res) => {
-    console.log("A - controller started");
     const email = req.body.email?.trim().toLowerCase();
     const inviteRole = req.body.role;
 
     const workspace = req.workspace;
-    const senderId = req.user.id;
+    const senderId = req.user.id; 
 
     // 1. Validate email
     if (!email) {
@@ -18,7 +17,7 @@ export const sendInvitation = async (req, res) => {
             message: "Email is required",
         });
     }
-   console.log("C - email validated");
+   
     // 2. Validate workspace
     if (!workspace) {
         return res.status(400).json({
@@ -26,12 +25,12 @@ export const sendInvitation = async (req, res) => {
             message: "Workspace not found",
         });
     }
- console.log("D - workspace validated");
+ 
     try {
         // If req.workspace contains the whole workspace object
         const workspaceId = workspace.id;
 
-          console.log("E - before sender membership query");
+       
 
         // 3. Get sender's membership/role
         const senderMembership = await prisma.workspaceMember.findFirst({
@@ -41,7 +40,6 @@ export const sendInvitation = async (req, res) => {
             },
         });
 
-        console.log("F - sender membership query finished");
         if (!senderMembership) {
             return res.status(403).json({
                 success: false,
@@ -59,14 +57,14 @@ export const sendInvitation = async (req, res) => {
                 message: "Access denied",
             });
         }
-console.log("G - before user query");
+
         // 5. Check whether the invited email already belongs to a user
         const user = await prisma.user.findUnique({
             where: {
                 email: email,
             },
         });
-        console.log("G - finished user query");
+       
 
         // 6. If user exists, check whether already a workspace member
         if (user) {
@@ -76,7 +74,7 @@ console.log("G - before user query");
                     workspaceId: workspaceId,
                 },
             });
-  console.log("after the already member")
+  
             if (alreadyMember) {
                 return res.status(409).json({
                     success: false,
@@ -94,7 +92,7 @@ console.log("G - before user query");
                 },
             },
         });
-        console.log("after existingInviattion")
+       
 
         // 8. Generate invitation details
         const token = crypto.randomBytes(32).toString("hex");
@@ -150,7 +148,7 @@ console.log("G - before user query");
                 },
             });
         }
-console.log("after creation of invitation")
+
         // 11. Get sender information
         const sender = await prisma.user.findUnique({
             where: {
@@ -158,11 +156,9 @@ console.log("after creation of invitation")
             },
         });
 
-        console.log("after sender")
-
         // 12. Send invitation email
         await sendInvitationEmail(
-            email,
+            "harshitabisht794@gmail.com",
             invitation.token,
             invitation.role,
             sender.name,
@@ -276,6 +272,7 @@ export const acceptInvitation =async(req,res)=>{
         })
     }
     const userId=req.user.id;
+    console.log("userId",userId);
     const email=req.user.email.trim().toLowerCase();
 
     if(!userId && !email){
@@ -307,12 +304,12 @@ export const acceptInvitation =async(req,res)=>{
                 message:"invitation not found"
             })
         }
-        if(user.email.toLowerCase() !== existingInvitation.email.toLowerCase()){
-            return res.status(403).json({
-                success:false,
-                message:"the email was send to the ddifferent email addres"
-            })
-        }
+       // if(user.email.toLowerCase() !== existingInvitation.email.toLowerCase()){
+        //    return res.status(403).json({
+        //        success:false,
+         //       message:"the email was send to the ddifferent email addres"
+         //   })
+       // }
         if(existingInvitation.status==="ACCEPTED"){
             return res.status(409).json({
                 success:false,

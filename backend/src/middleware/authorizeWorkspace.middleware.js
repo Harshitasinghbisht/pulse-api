@@ -16,6 +16,7 @@ export const authorizeWorkspace=(action)=>{
                     message:"Invalid workspace ID."
                 })
             }
+        
      const workspace = await prisma.workspace.findUnique({
     where: { id: workspaceId },
     include: {
@@ -30,12 +31,14 @@ export const authorizeWorkspace=(action)=>{
         },
     },
 });
+
       if(!workspace){
                 return res.status(404).json({
                     success:false,
                     message:"workspace unauthorized"
                 })
             }
+
             const allowed =hasPermission(workspace,userId,action);
             if(!allowed){
                 return res.status(403).json({
