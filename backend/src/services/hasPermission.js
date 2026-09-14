@@ -4,11 +4,17 @@ export const getWorkspaceRole=(workspace,userId)=>{
 }
 
 export const workspacePermission={
-  viewWorkspace:   ["OWNER", "MEMBER","VIEWER","ADMIN"],
+  viewWorkspace:   ["OWNER", "EDITOR","VIEWER","ADMIN"],
   updateWorkspace: ["OWNER"],
   deleteWorkspace: ["OWNER"],
   inviteMember:    ["OWNER"],
   removeMember:    ["OWNER"],
+
+    // Collection permissions
+  createCollection: ["OWNER", "ADMIN"],
+  viewCollection: ["OWNER", "ADMIN", "EDITOR", "VIEWER"],
+  updateCollection: ["OWNER", "ADMIN", "EDITOR"],
+  deleteCollection: ["OWNER", "ADMIN"],
 };
 
 export const hasPermission=(workspace,userId,action)=>{
@@ -17,5 +23,5 @@ export const hasPermission=(workspace,userId,action)=>{
         return false
     }
 
-    return workspacePermission[action].includes(role);
+    return workspacePermission[action]?.includes(role)?? false;
 }

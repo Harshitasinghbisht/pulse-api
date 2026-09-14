@@ -21,6 +21,7 @@ model User {
   passwordResetExpiry DateTime?
   workspaceMembers    WorkspaceMember[]
   invitations         Invitation[]
+  collections         Collection[]
 }
 
 model Workspace {
@@ -32,6 +33,7 @@ model Workspace {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   invitations Invitation[]
+  collections Collection[]
 }
 
 model WorkspaceMember {
@@ -84,4 +86,20 @@ enum InvitationStatus {
   ACCEPTED
   DECLINED
   EXPIRED
+}
+
+model Collection {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+
+  createdBy     String?
+  createdByUser User?   @relation(fields: [createdBy], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([workspaceId, name])
 }
