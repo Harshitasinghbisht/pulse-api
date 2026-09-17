@@ -123,60 +123,158 @@ try {
 }
 }
 
-export const getSingleCollection=async(req,res)=>{
- const userId=req.user.id;
- const {collectionId}=req.params;
- if(!collectionId){
+export const getSingleCollection = async (req, res) => {
+  const { collectionId } = req.params;
+
+  if (!collectionId) {
+    return res.status(400).json({
+      success: false,
+      message: "Collection id is required"
+    });
+  }
+
+  try {
+    const collection = req.collection;
+
+    return res.status(200).json({
+      success: true,
+      message: "Collection fetched successfully",
+      collection
+    });
+
+  } catch (error) {
+    console.error("Get single collection:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
+};
+
+export const updateCollection = async (req, res) => {
+  const { collectionId } = req.params;
+  const { name, description } = req.body;
+
+  if (!collectionId) {
+    return res.status(400).json({
+      success: false,
+      message: "Collection id is required"
+    });
+  }
+
+  if (name === undefined && description === undefined) {
+    return res.status(400).json({
+      success: false,
+      message: "Provide name or description to update"
+    });
+  }
+
+  try {
+    // Collection is already fetched by authorizeCollection middleware
+    const collection = req.collection;
+
+    const data = {};
+
+    if (name !== undefined) {
+      if (typeof name !== "string") {
+        return res.status(400).json({
+          success: false,
+          message: "Name must be a string"
+        });
+      }
+
+      const trimmedName = name.trim();
+
+      if (!trimmedName) {
+        return res.status(400).json({
+          success: false,
+          message: "Collection name cannot be empty"
+        });
+      }
+
+      data.name = trimmedName;
+    }
+
+    if (description !== undefined) {
+      if (typeof description !== "string") {
+        return res.status(400).json({
+          success: false,
+          message: "Description must be a string"
+        });
+      }
+
+      data.description = description.trim();
+    }
+
+    const nameUnchanged =
+      data.name === undefined || data.name === collection.name;
+
+    const descriptionUnchanged =
+      data.description === undefined ||
+      data.description === collection.description;
+
+    if (nameUnchanged && descriptionUnchanged) {
+      return res.status(409).json({
+        success: false,
+        message: "No changes detected"
+      });
+    }
+
+    const updatedCollection = await prisma.collection.update({
+      where: {
+        id: collectionId
+      },
+      data
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Collection updated successfully",
+      collection: updatedCollection
+    });
+
+  } catch (error) {
+    console.error("update collection", error);
+
+    if (error.code === "P2002") {
+      return res.status(409).json({
+        success: false,
+        message: "A collection with this name already exists"
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
+};
+
+export const deleteCollection=async(req,res)=>{
+const {collectionId}=req.params;
+if(!collectionId){
     return res.status(400).json({
         success:false,
         message:"collection id is required"
     })
- }
- try {
-    const collection=await prisma.collection.findUnique({
+}
+try {
+  
+    await prisma.collection.delete({
         where:{
             id:collectionId
         }
     })
-    if(!collection){
-         return res.status(404).json({
-        success:false,
-        message:"collection not found"
-    })
-    }
-    const membership = await prisma.workspaceMember.findUnique({
-      where: {
-        userId_workspaceId: {
-          userId,
-          workspaceId: collection.workspaceId
-        }
-      }
-    });
-
-    if (!membership) {
-      return res.status(403).json({
-        success: false,
-        message: "You are not a member of this workspace"
-      });
-    }
-    return res.status(200).json({
-        success:true,
-        message:"collection featched successfully",
-        collection
-    })
- } catch (error) {
-    console.error("get single collection",error)
+     return res.status(201).json({
+            success:false,
+            message:"collection deleted successfully"
+        })
+} catch (error) {
+    console.error("delete collection",error)
     return res.status(500).json({
-        success:false,
-        message:"Internal server error"
-    })
- }
+            success:false,
+            message:"Internal server error"
+        })
 }
-
-export const updateCollection=async(req,res)=>{
-
-}
-
-export const deleteCollection=(req,res)=>{
-
 }
