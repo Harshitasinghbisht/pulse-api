@@ -1,4 +1,4 @@
-import { prisma } from "../config/prisma";
+import { prisma } from "../config/prisma.js";
 
 export const createCollection=async(req,res)=>{
 const {workspaceId}=req.params;
@@ -62,7 +62,7 @@ try {
         name:collectionName,
         description:description?.trim() || null,
         workspaceId,
-        createdById:userId,
+        createdBy:userId,
     }
  })
   return res.status(201).json({
@@ -124,6 +124,7 @@ try {
 }
 
 export const getSingleCollection = async (req, res) => {
+  console.log("here")
   const { collectionId } = req.params;
 
   if (!collectionId) {
@@ -267,7 +268,7 @@ try {
         }
     })
      return res.status(201).json({
-            success:false,
+            success:true,
             message:"collection deleted successfully"
         })
 } catch (error) {

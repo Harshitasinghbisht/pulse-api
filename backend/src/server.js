@@ -8,6 +8,7 @@ import { prisma } from "../src/config/prisma.js";
 import userRouter from "./routes/auth.route.js";
 import workspaceRouter from "./routes/workspace.route.js"
 import invitationRouter from "./routes/invitation.route.js";
+import collectionRouter from "./routes/collection.route.js";
 
 dotenv.config();
 const app=express();
@@ -28,6 +29,7 @@ app.use(cookieParser());
 app.use("/api/v1/auth",userRouter);
 app.use("/api/v1/workspace",workspaceRouter);
 app.use("/api/v1/invitation",invitationRouter);
+app.use("/api/v1/collection",collectionRouter);
 
 // 404 Route Handler
 app.use((req, res) => {

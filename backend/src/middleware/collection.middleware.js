@@ -1,5 +1,5 @@
-import { prisma } from "../config/prisma";
-import { hasPermission } from "../services/hasPermission";
+import { prisma } from "../config/prisma.js";
+import { hasPermission } from "../services/hasPermission.js";
 import { getWorkspaceRole } from "../services/hasPermission.js"
 
 export const authorizeCollection=(action)=>{
