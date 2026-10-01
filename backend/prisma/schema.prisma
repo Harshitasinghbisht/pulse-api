@@ -22,6 +22,7 @@ model User {
   workspaceMembers    WorkspaceMember[]
   invitations         Invitation[]
   collections         Collection[]
+  requests Request[]
 }
 
 model Workspace {
@@ -101,5 +102,94 @@ model Collection {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  requests Request[]
+
   @@unique([workspaceId, name])
+}
+model Request {
+  id           String      @id @default(cuid())
+  name         String
+  method       HttpMethod
+  url          String
+  body         Json?
+  collectionId String
+  createdById  String
+
+  collection   Collection  @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  createdBy    User        @relation(fields: [createdById], references: [id])
+
+  headers      RequestHeader[]
+  queryParams  RequestQueryParam[]
+  auth         RequestAuth?
+
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([collectionId])
+  @@index([createdById])
+}
+
+enum HttpMethod {
+  GET
+  POST
+  PUT
+  PATCH
+  DELETE
+  HEAD
+  OPTIONS
+}
+
+model RequestHeader {
+  id        String  @id @default(cuid())
+  key       String
+  value     String
+  enabled   Boolean @default(true)
+
+  requestId String
+  request   Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([requestId])
+}
+
+model RequestQueryParam {
+  id        String  @id @default(cuid())
+  key       String
+  value     String
+  enabled   Boolean @default(true)
+
+  requestId String
+  request   Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([requestId])
+}
+
+model RequestAuth {
+  id        String   @id @default(cuid())
+  type      AuthType
+
+  token     String?
+  username  String?
+  password  String?
+
+  key       String?
+  value     String?
+
+  requestId String   @unique
+  request   Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum AuthType {
+  NONE
+  BEARER
+  BASIC
+  API_KEY
 }
